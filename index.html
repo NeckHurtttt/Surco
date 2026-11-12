@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Surco · rotaciones con datos de la NASA</title>
+  <meta name="description" content="Planifica la rotación de cultivos de tu lote con 25 años de datos de NASA POWER: clima, ganancia, riesgo y salud del suelo.">
+  <meta name="theme-color" content="#1f3d2b">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-in">
+      <a class="brand" href="#">
+        <svg viewBox="0 0 40 40" aria-hidden="true"><use href="assets/icon.svg#logo"/></svg>
+        <span>Surco</span>
+      </a>
+      <nav class="steps" aria-label="Pasos">
+        <a href="#lote" data-t="s1"></a><a href="#clima" data-t="s2"></a><a href="#rotacion" data-t="s3"></a><a href="#comparar" data-t="s4"></a>
+      </nav>
+      <div class="tools">
+        <button id="btn-lang" class="ghost" type="button"></button>
+        <button id="btn-theme" class="ghost icon" type="button" aria-label="Tema">◐</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <p class="kicker"><span class="nasa-dot"></span><span data-t="dataBadge"></span></p>
+        <h1 data-t="tagline"></h1>
+        <p class="lead" data-t="lead"></p>
+      </div>
+    </section>
+
+    <!-- 1. Lote -->
+    <section id="lote" class="step">
+      <div class="wrap">
+        <header class="step-h"><span class="num">1</span><div><h2 data-t="s1"></h2><p data-t="s1sub"></p></div></header>
+        <div class="grid-lote">
+          <div id="map" class="map" role="application" aria-label="Mapa"></div>
+          <div class="panel">
+            <p class="label" data-t="zones"></p>
+            <div id="zones" class="chips"></div>
+            <div class="row2">
+              <label><span data-t="lat"></span><input id="lat" type="number" step="0.01" min="-60" max="60"></label>
+              <label><span data-t="lon"></span><input id="lon" type="number" step="0.01" min="-180" max="180"></label>
+            </div>
+            <div class="row2">
+              <label><span data-t="soil"></span><select id="soil"></select></label>
+              <label><span data-t="water"></span><select id="water"><option value="0" data-t="rainfed"></option><option value="1" data-t="irrigated"></option></select></label>
+            </div>
+            <button id="btn-analyze" class="primary big" type="button" data-t="analyze"></button>
+            <p id="status" class="status" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Clima -->
+    <section id="clima" class="step locked">
+      <div class="wrap">
+        <header class="step-h"><span class="num">2</span><div><h2 data-t="s2"></h2><p data-t="s2sub"></p></div></header>
+        <div id="climate-cards" class="cards4"></div>
+        <div class="grid2">
+          <figure class="fig"><figcaption data-t="onsetChart"></figcaption><div id="chart-onset"></div>
+            <p class="legend"><i class="lg mean-a"></i><span id="lg-a"></span> <i class="lg mean-b"></i><span id="lg-b"></span> <i class="lg trend"></i><span id="lg-t"></span></p></figure>
+          <figure class="fig"><figcaption data-t="monthlyChart"></figcaption><div id="chart-monthly"></div>
+            <p class="legend"><i class="lg bar-rain"></i><span data-t="rain"></span> <i class="lg line-et0"></i><span data-t="et0"></span> · <span data-t="vulnerable"></span>: <i class="lg v-dry"></i><span data-t="v_dry"></span> <i class="lg v-heat"></i><span data-t="v_heat"></span> <i class="lg v-frost"></i><span data-t="v_frost"></span> <i class="lg v-erosive"></i><span data-t="v_erosive"></span></p></figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Rotación actual -->
+    <section id="rotacion" class="step locked">
+      <div class="wrap">
+        <header class="step-h"><span class="num">3</span><div><h2 data-t="s3"></h2><p data-t="s3sub"></p></div></header>
+        <p class="label" data-t="presets"></p>
+        <div id="presets" class="chips"></div>
+        <p class="label" data-t="custom"></p>
+        <div id="builder" class="builder"></div>
+        <label class="check"><input id="two-years" type="checkbox"> <span data-t="twoYears"></span></label>
+        <details class="prices">
+          <summary data-t="prices"></summary>
+          <p class="note" data-t="pricesNote"></p>
+          <div class="table-wrap"><table id="price-table"></table></div>
+        </details>
+        <div class="weights">
+          <p class="label" data-t="priorities"></p>
+          <label><span data-t="wProfit"></span><input id="w-profit" type="range" min="0" max="10" value="4"></label>
+          <label><span data-t="wSafety"></span><input id="w-safety" type="range" min="0" max="10" value="3"></label>
+          <label><span data-t="wSoil"></span><input id="w-soil" type="range" min="0" max="10" value="3"></label>
+        </div>
+        <button id="btn-compare" class="primary big" type="button" data-t="compare"></button>
+        <div id="progress" class="progress" hidden><div></div><span></span></div>
+      </div>
+    </section>
+
+    <!-- 4. Comparar -->
+    <section id="comparar" class="step locked">
+      <div class="wrap">
+        <header class="step-h"><span class="num">4</span><div><h2 data-t="s4"></h2><p data-t="s4sub"></p></div></header>
+        <div id="warnings"></div>
+        <div id="cards" class="rot-cards"></div>
+        <figure class="fig wide"><figcaption><span data-t="timeline"></span> <small data-t="timelineSub"></small></figcaption><div id="chart-timeline" class="scroll-x"></div></figure>
+        <figure class="fig wide"><figcaption><span data-t="history"></span> <small data-t="historySub"></small></figcaption><div id="chart-history" class="scroll-x"></div></figure>
+        <div class="actions">
+          <button id="btn-print" class="primary" type="button" data-t="report"></button>
+          <button id="btn-share" class="ghost" type="button" data-t="share"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Método -->
+    <section id="metodo" class="step">
+      <div class="wrap">
+        <header class="step-h"><span class="num">5</span><div><h2 data-t="s5"></h2><p data-t="s5sub"></p></div></header>
+        <div class="grid2 method">
+          <div><h3 data-t="methodTitle"></h3><ul id="method"></ul></div>
+          <div><h3 data-t="limitsTitle"></h3><ul id="limits"></ul>
+            <h3 data-t="sources"></h3>
+            <ul class="sources">
+              <li><a href="https://power.larc.nasa.gov/" target="_blank" rel="noopener">NASA POWER (LaRC)</a> · <a href="https://power.larc.nasa.gov/docs/services/api/temporal/daily/" target="_blank" rel="noopener">API</a></li>
+              <li><a href="https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/" target="_blank" rel="noopener">NASA GMAO MERRA-2</a></li>
+              <li><a href="https://www.fao.org/4/x0490e/x0490e00.htm" target="_blank" rel="noopener">FAO-56: Crop evapotranspiration</a></li>
+              <li><a href="https://www.fao.org/4/i2800e/i2800e00.htm" target="_blank" rel="noopener">FAO-66: Crop yield response to water</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot"><div class="wrap"><p data-t="footer"></p></div></footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
