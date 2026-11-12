@@ -77,7 +77,7 @@ function cacheSet(lat, lon, compact) {
 }
 
 // Carga datos: caché → API → datos demo (si se da demoUrl)
-export async function loadPower(lat, lon, { demoUrl, fetchImpl = fetch, onStatus = () => {} } = {}) {
+export async function loadPower(lat, lon, { demoUrl, demoData, fetchImpl = fetch, onStatus = () => {} } = {}) {
   const cached = cacheGet(lat, lon);
   if (cached) { onStatus('cache'); return normalize(cached, 'cache'); }
   try {
@@ -91,6 +91,7 @@ export async function loadPower(lat, lon, { demoUrl, fetchImpl = fetch, onStatus
     cacheSet(lat, lon, compact);
     return normalize(compact, 'api');
   } catch (err) {
+    if (demoData) { onStatus('demo'); return normalize(demoData, 'demo'); }
     if (!demoUrl) throw err;
     onStatus('demo');
     const res = await fetchImpl(demoUrl);

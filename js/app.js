@@ -69,8 +69,10 @@ async function analyze() {
   const st = $('#status'); st.className = 'status'; st.textContent = t('loading');
   try {
     const loc = LOCATIONS.find((l) => l.id === state.locId);
+    const demoId = loc ? loc.id : nearestDemo().id;
     const data = await loadPower(state.lat, state.lon, {
-      demoUrl: loc ? `data/demo/${loc.id}.json` : `data/demo/${nearestDemo().id}.json`,
+      demoUrl: `data/demo/${demoId}.json`,
+      demoData: window.SURCO_DEMO?.[demoId], // versión de un solo archivo (Surco.html)
       onStatus: (s) => { if (s !== 'api') st.textContent = t('st_' + s); },
     });
     state.data = data;
@@ -252,7 +254,7 @@ async function compare() {
 }
 
 function seqName(r) {
-  return r.plan.items.map((it) => L(it.crop.short) + (it.cover ? '*' : '')).join(' → ');
+  return r.plan.items.map((it) => L(it.crop.short) + (it.cover ? ` (${t('cover')})` : '')).join(' → ');
 }
 const pct = (x) => `${fmt(x * 100)} %`;
 const signed = (v, d = 0) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${fmt(Math.abs(v), d)}`;

@@ -1,1 +1,1 @@
-{"type":"module","scripts":{"test":"node --test tests/","demo-data":"node scripts/fetch-demo.mjs","serve":"python3 -m http.server 8000"}}
+{"type":"module","scripts":{"test":"node --test tests/","demo-data":"node scripts/fetch-demo.mjs","serve":"python3 -m http.server 8000","build":"node scripts/empaquetar.mjs"}}
